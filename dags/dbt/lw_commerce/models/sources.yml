@@ -2,25 +2,43 @@ version: 2
 
 sources:
   - name: raw
-    description: Append-only landing zone written by the Airflow HTTP ingest task.
+    description: >
+      Append-only landing zone written by the Airflow `ingest_bronze_http` task
+      (FastAPI → databricks-sql-connector → SQL Warehouse). Payloads are STRING JSON.
     database: "{{ env_var('DATABRICKS_CATALOG', 'workspace') }}"
     schema: raw
     tables:
       - name: products_ingest
-        description: >
-          One row per product API record per ingest batch. payload is STRING JSON.
+        description: One row per product API record per ingest batch.
         columns:
           - name: ingest_id
+            description: Unique id of the landed row.
+            tests: [not_null]
           - name: batch_id
+            description: Id of the ingest run (one per DAG run).
+            tests: [not_null]
           - name: product_id
+            description: '{{ doc("product_id") }}'
+            tests: [not_null]
           - name: payload
+            description: Raw product JSON as returned by `GET /v1/products`.
+            tests: [not_null]
           - name: ingested_at
+            description: Landing timestamp.
       - name: orders_ingest
-        description: >
-          One row per order API record per ingest batch (items nested in payload).
+        description: One row per order API record per ingest batch (items nested in payload).
         columns:
           - name: ingest_id
+            description: Unique id of the landed row.
+            tests: [not_null]
           - name: batch_id
+            description: Id of the ingest run.
+            tests: [not_null]
           - name: order_id
+            description: '{{ doc("order_id") }}'
+            tests: [not_null]
           - name: payload
+            description: Raw order JSON (header + `items[]`) from `GET /v1/orders`.
+            tests: [not_null]
           - name: ingested_at
+            description: Landing timestamp.

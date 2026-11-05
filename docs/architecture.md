@@ -1,6 +1,6 @@
 # Architecture notes
 
-See root [README.md](../README.md) for the mermaid diagrams and layer table.
+See root [README.md](../README.md) for the mermaid diagrams and layer table, [STUDENT_GUIDE.md](STUDENT_GUIDE.md) for the step-by-step explanation, and [LINEAGE.md](LINEAGE.md) for table lineage + dbt docs.
 
 ## Ingest path (teachable on Free Edition)
 

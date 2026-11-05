@@ -1,21 +1,110 @@
 version: 2
 
+# Model IDs keep silver_* for uniqueness across layers; alias → UC table without prefix.
 models:
-  # Model IDs keep silver_* for uniqueness across layers; alias → UC table without prefix.
   - name: silver_products
-    description: Clean product dimension for analytics joins. UC table silver.products.
+    description: Clean product dimension (only `unit_price > 0`). UC table **silver.products**.
     columns:
       - name: product_id
+        description: '{{ doc("product_id") }}'
         tests: [not_null, unique]
+      - name: product_name
+        description: Product display name.
+        tests: [not_null]
+      - name: category
+        description: Product category.
+      - name: unit_price
+        description: '{{ doc("unit_price") }}'
+        tests: [not_null]
+      - name: currency
+        description: Currency code.
+      - name: updated_at
+        description: Last update timestamp from the API.
+      - name: source_batch_id
+        description: '{{ doc("source_batch_id") }}'
+      - name: source_ingested_at
+        description: '{{ doc("source_ingested_at") }}'
+      - name: silver_loaded_at
+        description: '{{ doc("loaded_at") }}'
+
   - name: silver_orders
-    description: Clean order headers with normalized status and order_date. UC table silver.orders.
+    description: Clean order headers with normalised status and `order_date`. UC table **silver.orders**.
     columns:
       - name: order_id
+        description: '{{ doc("order_id") }}'
         tests: [not_null, unique]
+      - name: customer_id
+        description: '{{ doc("customer_id") }}'
+        tests: [not_null]
+      - name: country
+        description: '{{ doc("country") }}'
+        tests: [not_null]
+      - name: status
+        description: '{{ doc("order_status") }}'
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['created', 'paid', 'shipped', 'delivered', 'cancelled']
+      - name: created_at
+        description: Order creation timestamp.
+      - name: updated_at
+        description: Last update timestamp.
+      - name: order_date
+        description: '`date(created_at)` — the day grain used by gold KPIs.'
+        tests: [not_null]
+      - name: source_batch_id
+        description: '{{ doc("source_batch_id") }}'
+      - name: source_ingested_at
+        description: '{{ doc("source_ingested_at") }}'
+      - name: silver_loaded_at
+        description: '{{ doc("loaded_at") }}'
+
   - name: silver_order_items
-    description: Order lines enriched with customer, country, product attributes. UC table silver.order_items.
+    description: >
+      Order lines enriched with order (customer, country, status, date) and product attributes.
+      Grain: order × line. UC table **silver.order_items**.
     columns:
       - name: order_id
-        tests: [not_null]
+        description: '{{ doc("order_id") }}'
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('silver_orders')
+                field: order_id
       - name: product_id
+        description: '{{ doc("product_id") }}'
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('silver_products')
+                field: product_id
+              config:
+                severity: warn   # left join: unknown products are kept but flagged
+      - name: quantity
+        description: Units on the line (> 0).
         tests: [not_null]
+      - name: unit_price
+        description: '{{ doc("unit_price") }}'
+        tests: [not_null]
+      - name: line_amount
+        description: '{{ doc("line_amount") }}'
+        tests: [not_null]
+      - name: customer_id
+        description: '{{ doc("customer_id") }}'
+      - name: country
+        description: '{{ doc("country") }}'
+      - name: status
+        description: '{{ doc("order_status") }}'
+      - name: created_at
+        description: Order creation timestamp.
+      - name: order_date
+        description: Order day.
+      - name: product_name
+        description: Product name (null if product unknown).
+      - name: category
+        description: Product category (null if product unknown).
+      - name: silver_loaded_at
+        description: '{{ doc("loaded_at") }}'
