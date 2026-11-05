@@ -1,3 +1,4 @@
+# Branch dbt-v1: explicit Core 1.x pin (dbt-databricks==1.12.4). Do not swap for Fusion in dbt_venv.
 # Astro Runtime for Airflow 3.3 (matches brewery-cosmos-demo mold)
 # Runtime 3.3-2 ships Python 3.14 — need dbt-databricks with cp314 wheels.
 FROM astrocrpublic.azurecr.io/runtime:3.3-2

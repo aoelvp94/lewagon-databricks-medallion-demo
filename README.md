@@ -1,3 +1,5 @@
+**Branch `dbt-v1`:** Core 1.x / dbt-databricks 1.12 pin for Cosmos. See docs/DBT_V1_BRANCH.md.
+
 # Le Wagon · LW Commerce Medallion Demo
 
 **Astro CLI + Astronomer Cosmos + dbt-databricks + Databricks SQL Warehouse**
