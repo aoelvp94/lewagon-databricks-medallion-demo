@@ -51,3 +51,7 @@ bench/out/
 
 # Track *.example only — never commit real PATs / tokens
 _publish/
+
+# dbt local identity
+.user.yml
+**/.user.yml
