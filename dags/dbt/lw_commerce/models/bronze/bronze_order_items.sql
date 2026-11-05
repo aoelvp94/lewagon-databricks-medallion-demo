@@ -4,7 +4,7 @@
 ) }}
 
 /*
-  Bronze: explode order.items[] from the deduped bronze orders payload.
+  Bronze: explode order.items[] from the deduped bronze.orders payload.
   Grain: one row per array element (order line).
 */
 
