@@ -178,3 +178,17 @@ bench:
 
 scale-gen per_layer="250":
     python3 "{{ project }}/bench/generate_scale_project.py" --per-layer {{ per_layer }}
+
+bench-v2:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ -x /usr/local/airflow/dbt_v2_venv/bin/dbt ]]; then
+      DBT_BIN=/usr/local/airflow/dbt_v2_venv/bin/dbt
+    else
+      DBT_BIN="$(command -v dbt || true)"
+    fi
+    if [[ -z "${DBT_BIN}" ]]; then
+      echo "Install Fusion first: python -m pip install dbt" >&2
+      exit 1
+    fi
+    DBT_BIN="${DBT_BIN}" "{{ project }}/bench/run_bench.sh"

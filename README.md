@@ -166,3 +166,17 @@ Demo de clase: API inventada (LW Commerce) → landing `raw` en Databricks → d
 | [`dbt-v2`](https://github.com/aoelvp94/lewagon-databricks-medallion-demo/tree/dbt-v2) | Fusion / dbt v2 install path + bench recipes; Cosmos stays on 1.12 venv |
 
 Scale parse/compile harness: [`bench/`](bench/) (~750 synthetic models under `dags/dbt/lw_commerce_scale`). Details: [docs/DBT_V1_VS_V2.md](docs/DBT_V1_VS_V2.md).
+
+## This branch: `dbt-v2` (Fusion)
+
+- **Airflow + Cosmos teaching DAG** still runs against `/usr/local/airflow/dbt_venv` with **dbt-databricks 1.12** (Cosmos local execution expects classic Core + Python adapter).
+- **Fusion / dbt v2** is for local CLI parse/compile/docs on the scale harness:
+
+```bash
+python -m pip install dbt
+export DBT_BIN="$(command -v dbt)"
+just bench
+# or: DBT_BIN=/usr/local/airflow/dbt_v2_venv/bin/dbt just bench
+```
+
+See `Dockerfile` (dual venv) and [docs/DBT_V1_VS_V2.md](docs/DBT_V1_VS_V2.md).
