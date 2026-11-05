@@ -34,3 +34,14 @@ export DBT_BIN=dbt   # after: python -m pip install dbt && dbt --version
 | `--use-v2-parser` on 1.12 | Opt-in Rust parser compatibility check before full v2/Fusion migrate. |
 
 See [docs/DBT_V1_VS_V2.md](../docs/DBT_V1_VS_V2.md).
+
+## Sample timings (box, 2026-11-05 Europe/Amsterdam)
+
+Measured with `dbt-databricks==1.12.4` / Core 1.12.0, parse only (no warehouse):
+
+| Project | models | `dbt parse` | `dbt parse --use-v2-parser` |
+|---------|-------:|------------:|----------------------------:|
+| `lw_commerce` (teaching) | 10 | ~4.9s | ~4.5s |
+| `lw_commerce_scale` | 750 | ~6.0s | ~4.4s |
+
+Cold start dominates the tiny project; the scale project shows a clearer win for `--use-v2-parser`. Re-run locally with `./bench/run_bench.sh`. Set `BENCH_COMPILE=1` plus real `DATABRICKS_*` for compile timings.
