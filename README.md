@@ -68,6 +68,24 @@ Layer = schema. Table names have **no** `bronze_` / `silver_` / `gold_` prefix.
 
 See [docs/GENIE_DEMO.md](docs/GENIE_DEMO.md) for classroom NL questions (EN/ES) and AI/BI tile ideas.
 
+## Student guide, tests & lineage
+
+- **[docs/STUDENT_GUIDE.md](docs/STUDENT_GUIDE.md)** — what each step does (API → ingest → raw → bronze → silver → gold → Genie) and why Astro / Cosmos / Databricks SQL / credentials are set up this way.
+- **[docs/LINEAGE.md](docs/LINEAGE.md)** — full table lineage diagram, dbt tests overview, and Unity Catalog lineage.
+- dbt docs UI: `just docs` → http://localhost:8081 → *View Lineage Graph* (or `dbt docs generate && dbt docs serve --port 8081` in `dags/dbt/lw_commerce`).
+
+```mermaid
+flowchart LR
+  api[API] --> rP[raw.products_ingest] & rO[raw.orders_ingest]
+  rP --> bP[bronze.products] --> sP[silver.products]
+  rO --> bO[bronze.orders] --> sO[silver.orders]
+  bO --> bI[bronze.order_items] --> sI[silver.order_items]
+  sO --> sI
+  sP --> sI
+  sI --> gD[gold.daily_revenue] & gT[gold.top_products] & gC[gold.customer_orders]
+  sO --> gF[gold.order_fulfillment]
+```
+
 ## Prerequisites
 
 - [Astro CLI](https://www.astronomer.io/docs/astro/cli/install-cli) (`astro`)

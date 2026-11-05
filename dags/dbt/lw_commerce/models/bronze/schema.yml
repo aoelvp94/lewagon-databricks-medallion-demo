@@ -1,25 +1,89 @@
 version: 2
 
+# Model IDs keep bronze_* for uniqueness across layers; alias → UC table without prefix.
 models:
-  # Model IDs keep bronze_* for uniqueness across layers; alias → UC table without prefix.
   - name: bronze_products
-    description: Deduped product entities flattened from raw.products_ingest. UC table bronze.products.
+    description: >
+      Deduped product entities flattened from `raw.products_ingest`. UC table **bronze.products**.
+      {{ doc("dedupe_rule") }}
     columns:
       - name: product_id
+        description: '{{ doc("product_id") }}'
         tests: [not_null, unique]
-      - name: unit_price
+      - name: name
+        description: Product display name.
         tests: [not_null]
+      - name: category
+        description: Product category.
+      - name: unit_price
+        description: '{{ doc("unit_price") }}'
+        tests: [not_null]
+      - name: currency
+        description: Currency code (EUR in the demo API).
+      - name: updated_at
+        description: Last update timestamp from the API.
+      - name: source_batch_id
+        description: '{{ doc("source_batch_id") }}'
+      - name: source_ingested_at
+        description: '{{ doc("source_ingested_at") }}'
+      - name: bronze_loaded_at
+        description: '{{ doc("loaded_at") }}'
+
   - name: bronze_orders
-    description: Deduped order headers flattened from raw.orders_ingest. UC table bronze.orders.
+    description: >
+      Deduped order headers flattened from `raw.orders_ingest`. UC table **bronze.orders**.
+      {{ doc("dedupe_rule") }}
     columns:
       - name: order_id
+        description: '{{ doc("order_id") }}'
         tests: [not_null, unique]
       - name: customer_id
+        description: '{{ doc("customer_id") }}'
         tests: [not_null]
+      - name: country
+        description: '{{ doc("country") }}'
+      - name: status
+        description: Raw status string from the API (normalised in silver).
+      - name: created_at
+        description: Order creation timestamp.
+        tests: [not_null]
+      - name: updated_at
+        description: Last update timestamp.
+      - name: items_payload
+        description: Full order JSON, kept so `bronze_order_items` can explode `items[]`.
+      - name: source_batch_id
+        description: '{{ doc("source_batch_id") }}'
+      - name: source_ingested_at
+        description: '{{ doc("source_ingested_at") }}'
+      - name: bronze_loaded_at
+        description: '{{ doc("loaded_at") }}'
+
   - name: bronze_order_items
-    description: Exploded order line items from bronze order payloads. UC table bronze.order_items.
+    description: >
+      Order lines exploded from `bronze.orders.items_payload` (`lateral view outer explode`).
+      Grain: one row per order × line. UC table **bronze.order_items**.
     columns:
       - name: order_id
-        tests: [not_null]
+        description: '{{ doc("order_id") }}'
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('bronze_orders')
+                field: order_id
       - name: product_id
+        description: '{{ doc("product_id") }}'
         tests: [not_null]
+      - name: quantity
+        description: Units on the line.
+        tests: [not_null]
+      - name: unit_price
+        description: '{{ doc("unit_price") }}'
+      - name: line_amount
+        description: '{{ doc("line_amount") }}'
+      - name: source_batch_id
+        description: '{{ doc("source_batch_id") }}'
+      - name: source_ingested_at
+        description: '{{ doc("source_ingested_at") }}'
+      - name: bronze_loaded_at
+        description: '{{ doc("loaded_at") }}'

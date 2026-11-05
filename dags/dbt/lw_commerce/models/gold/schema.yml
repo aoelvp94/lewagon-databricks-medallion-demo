@@ -2,10 +2,104 @@ version: 2
 
 models:
   - name: daily_revenue
-    description: Daily revenue and order counts by country (non-cancelled). UC table gold.daily_revenue.
+    description: >
+      Daily revenue, orders, customers and AOV by country (non-cancelled orders).
+      Grain: `order_date × country`. UC table **gold.daily_revenue**.
+    columns:
+      - name: order_date
+        description: Order day.
+        tests: [not_null]
+      - name: country
+        description: '{{ doc("country") }}'
+        tests: [not_null]
+      - name: revenue_eur
+        description: '{{ doc("revenue_eur") }}'
+        tests: [not_null]
+      - name: orders
+        description: Distinct non-cancelled orders.
+      - name: customers
+        description: Distinct customers.
+      - name: avg_order_value_eur
+        description: '{{ doc("avg_order_value_eur") }}'
+      - name: gold_loaded_at
+        description: '{{ doc("loaded_at") }}'
+
   - name: top_products
-    description: Product ranking by revenue, units, and unique buyers. UC table gold.top_products.
+    description: Product ranking by revenue, units and unique buyers. Grain = product. UC table **gold.top_products**.
+    columns:
+      - name: product_id
+        description: '{{ doc("product_id") }}'
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('silver_products')
+                field: product_id
+              config:
+                severity: warn
+      - name: product_name
+        description: Product name.
+      - name: category
+        description: Product category.
+      - name: units_sold
+        description: Total units sold.
+      - name: revenue_eur
+        description: '{{ doc("revenue_eur") }}'
+        tests: [not_null]
+      - name: orders
+        description: Distinct orders containing the product.
+      - name: customers
+        description: Distinct buyers.
+      - name: gold_loaded_at
+        description: '{{ doc("loaded_at") }}'
+
   - name: order_fulfillment
-    description: Order status distribution (funnel) by country. UC table gold.order_fulfillment.
+    description: Order status funnel by country. Grain = `country × status`. UC table **gold.order_fulfillment**.
+    columns:
+      - name: country
+        description: '{{ doc("country") }}'
+        tests: [not_null]
+      - name: status
+        description: '{{ doc("order_status") }}'
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['created', 'paid', 'shipped', 'delivered', 'cancelled']
+      - name: order_count
+        description: Orders in this status.
+      - name: customers
+        description: Distinct customers in this status.
+      - name: pct_of_country
+        description: Share of the country's orders in this status (%, sums to ~100 per country).
+      - name: gold_loaded_at
+        description: '{{ doc("loaded_at") }}'
+
   - name: customer_orders
-    description: Per-customer LTV proxy, AOV, and primary country. UC table gold.customer_orders.
+    description: Per-customer LTV proxy, AOV, activity span and primary country. Grain = customer. UC table **gold.customer_orders**.
+    columns:
+      - name: customer_id
+        description: '{{ doc("customer_id") }}'
+        tests: [not_null, unique]
+      - name: orders
+        description: Distinct non-cancelled orders.
+      - name: revenue_eur
+        description: '{{ doc("revenue_eur") }}'
+        tests: [not_null]
+      - name: units
+        description: Total units bought.
+      - name: avg_order_value_eur
+        description: '{{ doc("avg_order_value_eur") }}'
+      - name: first_order_date
+        description: First order day.
+      - name: last_order_date
+        description: Last order day.
+      - name: customer_span_days
+        description: Days between first and last order.
+      - name: countries
+        description: Distinct countries the customer ordered from.
+      - name: primary_country
+        description: Country with the highest revenue for this customer.
+      - name: gold_loaded_at
+        description: '{{ doc("loaded_at") }}'
