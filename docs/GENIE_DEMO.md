@@ -10,10 +10,10 @@ AI/BI dashboard). Prefer asking in natural language; Genie will draft SQL.
 
 | Table | Use for |
 |-------|---------|
-| `gold.gold_daily_revenue` | Time series, country mix, AOV |
-| `gold.gold_top_products` | Product ranking, category mix |
-| `gold.gold_order_fulfillment` | Status funnel / ops |
-| `gold.gold_customer_orders` | Customer value, repeat buyers |
+| `gold.daily_revenue` | Time series, country mix, AOV |
+| `gold.top_products` | Product ranking, category mix |
+| `gold.order_fulfillment` | Status funnel / ops |
+| `gold.customer_orders` | Customer value, repeat buyers |
 
 ## Natural-language questions (EN / ES)
 
@@ -66,15 +66,15 @@ Ask Genie these in class (8–12). English first, then Spanish variant.
 
 Build a simple Lakeview / AI/BI dashboard on the SQL warehouse:
 
-1. **KPI row** — tiles from `gold_daily_revenue`:
+1. **KPI row** — tiles from `daily_revenue`:
    - Sum of `revenue_eur`
    - Sum of `orders`
    - Average of `avg_order_value_eur` (or weighted)
 2. **Line chart** — `order_date` × `revenue_eur` (optionally color by `country`).
-3. **Bar chart** — top 10 from `gold_top_products` (`product_name` × `revenue_eur`).
-4. **Stacked bar or funnel** — `gold_order_fulfillment` (`status` × `order_count`, facet/filter by `country`).
+3. **Bar chart** — top 10 from `top_products` (`product_name` × `revenue_eur`).
+4. **Stacked bar or funnel** — `order_fulfillment` (`status` × `order_count`, facet/filter by `country`).
 
-Optional fifth tile: histogram or table of `gold_customer_orders.orders` to show repeat-purchase distribution.
+Optional fifth tile: histogram or table of `customer_orders.orders` to show repeat-purchase distribution.
 
 ## Classroom tips
 
@@ -84,5 +84,5 @@ Optional fifth tile: histogram or table of `gold_customer_orders.orders` to show
 
 ## ES · Nota corta
 
-Después del DAG, abrí Genie sobre las tablas `gold_*` y pedí las preguntas de arriba.
+Después del DAG, abrí Genie sobre las tablas `gold.daily_revenue` / `top_products` / `order_fulfillment` / `customer_orders` y pedí las preguntas de arriba.
 Los tiles del dashboard sirven para cerrar la demo en 5 minutos.

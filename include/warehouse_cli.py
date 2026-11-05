@@ -26,10 +26,10 @@ def cmd_ping() -> int:
 
 def cmd_kpis() -> int:
     tables = [
-        "gold_daily_revenue",
-        "gold_top_products",
-        "gold_order_fulfillment",
-        "gold_customer_orders",
+        "daily_revenue",
+        "top_products",
+        "order_fulfillment",
+        "customer_orders",
     ]
     for table in tables:
         name = fq("gold", table)
@@ -50,10 +50,10 @@ def cmd_counts() -> int:
         ("silver", "products"),
         ("silver", "orders"),
         ("silver", "order_items"),
-        ("gold", "gold_daily_revenue"),
-        ("gold", "gold_top_products"),
-        ("gold", "gold_order_fulfillment"),
-        ("gold", "gold_customer_orders"),
+        ("gold", "daily_revenue"),
+        ("gold", "top_products"),
+        ("gold", "order_fulfillment"),
+        ("gold", "customer_orders"),
     ]
     with databricks_connection() as conn:
         with conn.cursor() as cur:

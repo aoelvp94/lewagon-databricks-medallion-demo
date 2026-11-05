@@ -5,7 +5,7 @@
 
 /*
   Bronze: flatten order header fields from STRING JSON; keep latest per order_id.
-  Line items live in bronze_order_items (exploded from the same payload).
+  Line items live in bronze.order_items (model bronze_order_items) (exploded from the same payload).
 */
 
 with flattened as (

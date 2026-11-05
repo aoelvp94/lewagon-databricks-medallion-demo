@@ -29,7 +29,7 @@ flowchart TD
   cosmosGold[Cosmos_gold]
   bronze["catalog.bronze.*"]
   silver["catalog.silver.*"]
-  gold["catalog.gold.gold_*"]
+  gold["catalog.gold.*"]
   genie[Databricks_Genie_AIBI]
 
   api -->|X-API-Key| ingest
@@ -53,14 +53,20 @@ flowchart TD
 
 Airflow **metadata** Postgres stays inside Astro. Only the **analytics** warehouse is Databricks.
 
-### Gold tables
+### Medallion tables (Unity Catalog)
+
+Layer = schema. Table names have **no** `bronze_` / `silver_` / `gold_` prefix.
 
 | Table | Grain / meaning |
 |-------|-----------------|
-| `gold.gold_daily_revenue` | Revenue, orders, customers, AOV by `order_date` × `country` |
-| `gold.gold_top_products` | Units + revenue ranking per product |
-| `gold.gold_order_fulfillment` | Status funnel (created/paid/shipped/delivered/cancelled) by country |
-| `gold.gold_customer_orders` | Per-customer LTV proxy, AOV, primary country |
+| `bronze.products` / `orders` / `order_items` | Flattened + deduped entities from raw ingest |
+| `silver.products` / `orders` / `order_items` | Typed commerce entities |
+| `gold.daily_revenue` | Revenue, orders, customers, AOV by `order_date` × `country` |
+| `gold.top_products` | Units + revenue ranking per product |
+| `gold.order_fulfillment` | Status funnel (created/paid/shipped/delivered/cancelled) by country |
+| `gold.customer_orders` | Per-customer LTV proxy, AOV, primary country |
+
+> dbt model *IDs* for bronze/silver stay `bronze_products` / `silver_products` (must be unique in one project); `alias:` maps them to the unprefixed UC table names. Gold model files are `daily_revenue.sql`, etc.
 
 See [docs/GENIE_DEMO.md](docs/GENIE_DEMO.md) for classroom NL questions (EN/ES) and AI/BI tile ideas.
 

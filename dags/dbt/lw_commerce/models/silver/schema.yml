@@ -1,18 +1,19 @@
 version: 2
 
 models:
+  # Model IDs keep silver_* for uniqueness across layers; alias → UC table without prefix.
   - name: silver_products
-    description: Clean product dimension for analytics joins.
+    description: Clean product dimension for analytics joins. UC table silver.products.
     columns:
       - name: product_id
         tests: [not_null, unique]
   - name: silver_orders
-    description: Clean order headers with normalized status and order_date.
+    description: Clean order headers with normalized status and order_date. UC table silver.orders.
     columns:
       - name: order_id
         tests: [not_null, unique]
   - name: silver_order_items
-    description: Order lines enriched with customer, country, product attributes.
+    description: Order lines enriched with customer, country, product attributes. UC table silver.order_items.
     columns:
       - name: order_id
         tests: [not_null]

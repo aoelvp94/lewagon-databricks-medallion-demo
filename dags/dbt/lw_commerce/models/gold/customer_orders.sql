@@ -1,10 +1,11 @@
 {{ config(
-    alias='gold_customer_orders',
+    alias='customer_orders',
     tags=['gold', 'kpi']
 ) }}
 
 /*
   Gold KPI — customer-level order metrics (LTV proxy, AOV, preferred country).
+  UC table: {catalog}.gold.customer_orders
 */
 
 with lines as (

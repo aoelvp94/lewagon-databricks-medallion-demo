@@ -1,10 +1,11 @@
 {{ config(
-    alias='gold_order_fulfillment',
+    alias='order_fulfillment',
     tags=['gold', 'kpi']
 ) }}
 
 /*
   Gold KPI — order status funnel by country (created → paid → shipped → delivered / cancelled).
+  UC table: {catalog}.gold.order_fulfillment
 */
 
 select
