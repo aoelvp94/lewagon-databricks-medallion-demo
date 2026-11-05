@@ -1,22 +1,23 @@
 version: 2
 
 models:
+  # Model IDs keep bronze_* for uniqueness across layers; alias → UC table without prefix.
   - name: bronze_products
-    description: Deduped product entities flattened from raw.products_ingest.
+    description: Deduped product entities flattened from raw.products_ingest. UC table bronze.products.
     columns:
       - name: product_id
         tests: [not_null, unique]
       - name: unit_price
         tests: [not_null]
   - name: bronze_orders
-    description: Deduped order headers flattened from raw.orders_ingest.
+    description: Deduped order headers flattened from raw.orders_ingest. UC table bronze.orders.
     columns:
       - name: order_id
         tests: [not_null, unique]
       - name: customer_id
         tests: [not_null]
   - name: bronze_order_items
-    description: Exploded order line items from bronze order payloads.
+    description: Exploded order line items from bronze order payloads. UC table bronze.order_items.
     columns:
       - name: order_id
         tests: [not_null]
