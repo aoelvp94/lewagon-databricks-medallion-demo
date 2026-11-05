@@ -94,7 +94,7 @@ warehouse_cli cmd:
     container="$(docker ps -q --filter 'name=lewagon-databricks-medallion-demo' --filter 'name=scheduler' | head -1)"
     if [[ -z "${container}" ]]; then
       # Fallback: any project-*scheduler* in this folder's compose project
-      container="$(docker ps --format '{{.ID}} {{.Names}}' | awk '/scheduler/ && /lewagon|medallion/ {print $1; exit}')"
+      container="$(docker ps --format '{{{{.ID}} {{{{.Names}}' | awk '/scheduler/ && /lewagon|medallion/ {print $1; exit}')"
     fi
     if [[ -z "${container}" ]]; then
       echo "Scheduler container not running. Start with: just start" >&2
@@ -119,7 +119,7 @@ dbt-run *args:
     set -euo pipefail
     container="$(docker ps -q --filter 'name=lewagon-databricks-medallion-demo' --filter 'name=scheduler' | head -1)"
     if [[ -z "${container}" ]]; then
-      container="$(docker ps --format '{{.ID}} {{.Names}}' | awk '/scheduler/ && /lewagon|medallion/ {print $1; exit}')"
+      container="$(docker ps --format '{{{{.ID}} {{{{.Names}}' | awk '/scheduler/ && /lewagon|medallion/ {print $1; exit}')"
     fi
     if [[ -z "${container}" ]]; then
       echo "Scheduler container not running. Start with: just start" >&2
@@ -192,3 +192,11 @@ bench-v2:
       exit 1
     fi
     DBT_BIN="${DBT_BIN}" "{{ project }}/bench/run_bench.sh"
+
+# dbt docs + lineage UI on your laptop (needs DATABRICKS_* exported and a local dbt venv; DBT_BIN overrides)
+docs port="8081":
+    cd "{{ project }}/dags/dbt/lw_commerce" && ${DBT_BIN:-dbt} docs generate --profiles-dir . && ${DBT_BIN:-dbt} docs serve --profiles-dir . --port {{ port }}
+
+# dbt tests only (schema + singular) against the warehouse
+dbt-test:
+    cd "{{ project }}/dags/dbt/lw_commerce" && ${DBT_BIN:-dbt} test --profiles-dir .
