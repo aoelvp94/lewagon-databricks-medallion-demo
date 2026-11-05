@@ -1,0 +1,53 @@
+# Git / OS
+.git
+.DS_Store
+
+# Secrets & local credentials — never commit
+.env
+*.env
+!.env.example
+airflow_settings.yaml
+*.tfvars
+!*.tfvars.example
+**/secrets/
+**/*secret*
+**/*credential*
+**/*credentials*
+**/*.pem
+**/*.key
+.databricks/
+
+# Python / venv
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Astro / Airflow local runtime
+astro
+.astro/
+airflow-webserver.pid
+webserver_config.py
+airflow.cfg
+airflow.db
+logs/
+
+# dbt artifacts
+dags/dbt/**/target/
+dags/dbt/**/dbt_packages/
+dags/dbt/**/logs/
+**/target/
+**/dbt_packages/
+
+# Terraform state
+.terraform/
+*.tfstate*
+.terraform.lock.hcl
+
+# Benchmark outputs (generated)
+bench/results/
+bench/out/
+*.bench.json
+
+# Track *.example only — never commit real PATs / tokens
+_publish/

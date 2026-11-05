@@ -1,0 +1,7 @@
+# Astro Runtime includes core providers; pin Cosmos for Airflow 3 + dbt
+astronomer-cosmos==1.15.1
+apache-airflow-providers-databricks>=7.0.0
+apache-airflow-providers-http>=5.2.0
+# Match dbt_venv connector line (Runtime is Python 3.14)
+databricks-sql-connector>=4.2.3,<4.4.1
+requests>=2.31.0

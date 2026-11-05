@@ -1,0 +1,42 @@
+# Local Astro overrides — analytics warehouse is Databricks SQL.
+# Fill DATABRICKS_* in .env (see .env.example) before `just demo`.
+#
+# Also starts the invented LW Commerce FastAPI so ingest can hit http://api:8000
+# from the scheduler network. If the API is down, ingest falls back to fixtures.
+
+x-databricks-env: &databricks-env
+  DATABRICKS_HOST: ${DATABRICKS_HOST:-}
+  DATABRICKS_HTTP_PATH: ${DATABRICKS_HTTP_PATH:-}
+  DATABRICKS_TOKEN: ${DATABRICKS_TOKEN:-}
+  DATABRICKS_CATALOG: ${DATABRICKS_CATALOG:-workspace}
+  DATABRICKS_SCHEMA: ${DATABRICKS_SCHEMA:-bronze}
+  API_BASE_URL: ${API_BASE_URL:-http://api:8000}
+  API_KEY: ${API_KEY:-lewagon-demo}
+
+services:
+  scheduler:
+    environment:
+      <<: *databricks-env
+
+  dag-processor:
+    environment:
+      <<: *databricks-env
+
+  api-server:
+    environment:
+      <<: *databricks-env
+      AIRFLOW__CORE__LAZY_LOAD_PLUGINS: "False"
+
+  triggerer:
+    environment:
+      <<: *databricks-env
+
+  # Invented LW Commerce API (HTTP → bronze landing)
+  api:
+    build:
+      context: ./api
+    ports:
+      - "8000:8000"
+    environment:
+      API_KEY: ${API_KEY:-lewagon-demo}
+    restart: unless-stopped

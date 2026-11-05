@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Append-only landing zone written by the Airflow HTTP ingest task.
+    database: "{{ env_var('DATABRICKS_CATALOG', 'workspace') }}"
+    schema: raw
+    tables:
+      - name: products_ingest
+        description: >
+          One row per product API record per ingest batch. payload is STRING JSON.
+        columns:
+          - name: ingest_id
+          - name: batch_id
+          - name: product_id
+          - name: payload
+          - name: ingested_at
+      - name: orders_ingest
+        description: >
+          One row per order API record per ingest batch (items nested in payload).
+        columns:
+          - name: ingest_id
+          - name: batch_id
+          - name: order_id
+          - name: payload
+          - name: ingested_at

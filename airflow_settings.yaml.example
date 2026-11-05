@@ -1,0 +1,20 @@
+# Local-only Airflow connections / variables (Astro CLI).
+# Copy to airflow_settings.yaml and replace REPLACE_ME_* from .env.
+# Astro loads this file as-is (no ${ENV} expansion). Do not commit real tokens.
+airflow:
+  connections:
+    - conn_id: databricks_sql
+      conn_type: databricks
+      conn_host: REPLACE_ME_DATABRICKS_HOST
+      conn_schema: default
+      conn_login: token
+      conn_password: REPLACE_ME_DATABRICKS_TOKEN
+      conn_extra: '{"http_path": "REPLACE_ME_DATABRICKS_HTTP_PATH", "catalog": "workspace"}'
+    - conn_id: lw_commerce_api
+      conn_type: http
+      conn_host: api
+      conn_schema: http
+      conn_port: 8000
+      conn_extra: '{"headers": {"X-API-Key": "lewagon-demo"}}'
+  pools: []
+  variables: []

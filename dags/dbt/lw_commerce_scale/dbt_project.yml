@@ -1,0 +1,23 @@
+name: lw_commerce_scale
+version: 1.0.0
+config-version: 2
+profile: lw_commerce_scale
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  lw_commerce_scale:
+    bronze:
+      +schema: bronze_scale
+      +materialized: view
+      +tags: ["bronze", "scale"]
+    silver:
+      +schema: silver_scale
+      +materialized: view
+      +tags: ["silver", "scale"]
+    gold:
+      +schema: gold_scale
+      +materialized: view
+      +tags: ["gold", "scale"]

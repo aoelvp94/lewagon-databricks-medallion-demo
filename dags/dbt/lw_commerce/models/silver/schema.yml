@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: silver_products
+    description: Clean product dimension for analytics joins.
+    columns:
+      - name: product_id
+        tests: [not_null, unique]
+  - name: silver_orders
+    description: Clean order headers with normalized status and order_date.
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+  - name: silver_order_items
+    description: Order lines enriched with customer, country, product attributes.
+    columns:
+      - name: order_id
+        tests: [not_null]
+      - name: product_id
+        tests: [not_null]

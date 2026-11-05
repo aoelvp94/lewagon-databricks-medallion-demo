@@ -1,0 +1,13 @@
+.git
+.env
+airflow_settings.yaml
+**/__pycache__
+**/.venv
+**/.terraform
+**/*.tfstate*
+**/.databricks
+**/target
+**/dbt_packages
+**/logs
+api/sample_responses/*.json
+!api/sample_responses/.gitkeep

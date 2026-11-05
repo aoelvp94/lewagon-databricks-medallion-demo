@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: gold_daily_revenue
+    description: Daily revenue and order counts by country (non-cancelled).
+  - name: gold_top_products
+    description: Product ranking by revenue, units, and unique buyers.
+  - name: gold_order_fulfillment
+    description: Order status distribution (funnel) by country.
+  - name: gold_customer_orders
+    description: Per-customer LTV proxy, AOV, and primary country.

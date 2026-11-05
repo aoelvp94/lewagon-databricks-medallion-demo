@@ -1,0 +1,205 @@
+{
+ "data": [
+  {
+   "product_id": "P001",
+   "name": "LW Electronics Item 1",
+   "category": "electronics",
+   "unit_price": 160.94,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T01:00:00+00:00"
+  },
+  {
+   "product_id": "P002",
+   "name": "LW Coffee Item 2",
+   "category": "coffee",
+   "unit_price": 9.18,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T02:00:00+00:00"
+  },
+  {
+   "product_id": "P003",
+   "name": "LW Apparel Item 3",
+   "category": "apparel",
+   "unit_price": 70.93,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T03:00:00+00:00"
+  },
+  {
+   "product_id": "P004",
+   "name": "LW Stickers Item 4",
+   "category": "stickers",
+   "unit_price": 58.13,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T04:00:00+00:00"
+  },
+  {
+   "product_id": "P005",
+   "name": "LW Books Item 5",
+   "category": "books",
+   "unit_price": 184.91,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T05:00:00+00:00"
+  },
+  {
+   "product_id": "P006",
+   "name": "LW Electronics Item 6",
+   "category": "electronics",
+   "unit_price": 170.14,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T06:00:00+00:00"
+  },
+  {
+   "product_id": "P007",
+   "name": "LW Coffee Item 7",
+   "category": "coffee",
+   "unit_price": 223.37,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T07:00:00+00:00"
+  },
+  {
+   "product_id": "P008",
+   "name": "LW Apparel Item 8",
+   "category": "apparel",
+   "unit_price": 24.47,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T08:00:00+00:00"
+  },
+  {
+   "product_id": "P009",
+   "name": "LW Stickers Item 9",
+   "category": "stickers",
+   "unit_price": 107.21,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T09:00:00+00:00"
+  },
+  {
+   "product_id": "P010",
+   "name": "LW Books Item 10",
+   "category": "books",
+   "unit_price": 10.36,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T10:00:00+00:00"
+  },
+  {
+   "product_id": "P011",
+   "name": "LW Electronics Item 11",
+   "category": "electronics",
+   "unit_price": 57.0,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T11:00:00+00:00"
+  },
+  {
+   "product_id": "P012",
+   "name": "LW Coffee Item 12",
+   "category": "coffee",
+   "unit_price": 127.82,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T12:00:00+00:00"
+  },
+  {
+   "product_id": "P013",
+   "name": "LW Apparel Item 13",
+   "category": "apparel",
+   "unit_price": 9.55,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T13:00:00+00:00"
+  },
+  {
+   "product_id": "P014",
+   "name": "LW Stickers Item 14",
+   "category": "stickers",
+   "unit_price": 52.11,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T14:00:00+00:00"
+  },
+  {
+   "product_id": "P015",
+   "name": "LW Books Item 15",
+   "category": "books",
+   "unit_price": 163.52,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T15:00:00+00:00"
+  },
+  {
+   "product_id": "P016",
+   "name": "LW Electronics Item 16",
+   "category": "electronics",
+   "unit_price": 137.6,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T16:00:00+00:00"
+  },
+  {
+   "product_id": "P017",
+   "name": "LW Coffee Item 17",
+   "category": "coffee",
+   "unit_price": 57.45,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T17:00:00+00:00"
+  },
+  {
+   "product_id": "P018",
+   "name": "LW Apparel Item 18",
+   "category": "apparel",
+   "unit_price": 148.55,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T18:00:00+00:00"
+  },
+  {
+   "product_id": "P019",
+   "name": "LW Stickers Item 19",
+   "category": "stickers",
+   "unit_price": 202.93,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T19:00:00+00:00"
+  },
+  {
+   "product_id": "P020",
+   "name": "LW Books Item 20",
+   "category": "books",
+   "unit_price": 4.61,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T20:00:00+00:00"
+  },
+  {
+   "product_id": "P021",
+   "name": "LW Electronics Item 21",
+   "category": "electronics",
+   "unit_price": 202.04,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T21:00:00+00:00"
+  },
+  {
+   "product_id": "P022",
+   "name": "LW Coffee Item 22",
+   "category": "coffee",
+   "unit_price": 175.44,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T22:00:00+00:00"
+  },
+  {
+   "product_id": "P023",
+   "name": "LW Apparel Item 23",
+   "category": "apparel",
+   "unit_price": 87.04,
+   "currency": "EUR",
+   "updated_at": "2026-10-01T23:00:00+00:00"
+  },
+  {
+   "product_id": "P024",
+   "name": "LW Stickers Item 24",
+   "category": "stickers",
+   "unit_price": 41.4,
+   "currency": "EUR",
+   "updated_at": "2026-10-02T00:00:00+00:00"
+  },
+  {
+   "product_id": "P025",
+   "name": "LW Books Item 25",
+   "category": "books",
+   "unit_price": 239.43,
+   "currency": "EUR",
+   "updated_at": "2026-10-02T01:00:00+00:00"
+  }
+ ],
+ "count": 25
+}

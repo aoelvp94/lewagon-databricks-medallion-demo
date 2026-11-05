@@ -1,0 +1,6 @@
+services:
+  lw-commerce-api:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      API_KEY: ${API_KEY:-lewagon-demo}

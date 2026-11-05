@@ -1,0 +1,3 @@
+databricks_host  = "https://dbc-<workspace>.cloud.databricks.com"
+databricks_token = "dapi..."
+catalog_name     = "workspace"

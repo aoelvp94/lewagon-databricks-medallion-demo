@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: bronze_products
+    description: Deduped product entities flattened from raw.products_ingest.
+    columns:
+      - name: product_id
+        tests: [not_null, unique]
+      - name: unit_price
+        tests: [not_null]
+  - name: bronze_orders
+    description: Deduped order headers flattened from raw.orders_ingest.
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests: [not_null]
+  - name: bronze_order_items
+    description: Exploded order line items from bronze order payloads.
+    columns:
+      - name: order_id
+        tests: [not_null]
+      - name: product_id
+        tests: [not_null]
