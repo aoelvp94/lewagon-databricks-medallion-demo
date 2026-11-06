@@ -1,0 +1,4 @@
+# The plugin manager imports every *.py under plugins/ as a top-level module
+# (named after the file stem). Keep the dashboard package out of that scan;
+# lw_commerce_dashboard_plugin.py imports it as a normal package instead.
+lw_commerce_dashboard/*

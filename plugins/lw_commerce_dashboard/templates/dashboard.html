@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LW Commerce KPIs · gold</title>
+  <style>
+    :root { --bg:#f7f8fa; --card:#fff; --ink:#1d2433; --muted:#6b7385; --line:#e3e6ec;
+            --accent:#017cee; --ok:#1a9c5b; --warn:#c77700; --bad:#c62f3d; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg:#12151c; --card:#1b2029; --ink:#e7eaf0; --muted:#98a1b3; --line:#2b3240; }
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:24px; background:var(--bg); color:var(--ink);
+           font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    header { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:18px; }
+    h1 { font-size:20px; margin:0; }
+    h2 { font-size:15px; margin:0 0 10px; }
+    .muted { color:var(--muted); font-size:12px; }
+    code { font-size:12px; background:var(--line); padding:1px 5px; border-radius:4px; }
+    a.btn { color:#fff; background:var(--accent); padding:6px 12px; border-radius:6px; text-decoration:none; font-size:13px; }
+    .grid { display:grid; gap:14px; }
+    .kpis { grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); margin-bottom:14px; }
+    .panels { grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+    .kpi .label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+    .kpi .value { font-size:24px; font-weight:650; margin-top:4px; }
+    .kpi .sub { color:var(--muted); font-size:12px; margin-top:2px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th, td { padding:6px 8px; border-bottom:1px solid var(--line); text-align:left; }
+    th { color:var(--muted); font-weight:600; font-size:12px; }
+    td.n, th.n { text-align:right; font-variant-numeric:tabular-nums; }
+    .bars { display:flex; align-items:flex-end; gap:4px; height:120px; padding-top:6px; }
+    .bar { flex:1; background:var(--accent); border-radius:3px 3px 0 0; min-height:2px; position:relative; }
+    .bar:hover { opacity:.8; }
+    .bar-labels { display:flex; gap:4px; margin-top:4px; }
+    .bar-labels span { flex:1; text-align:center; font-size:10px; color:var(--muted); overflow:hidden; white-space:nowrap; }
+    .pill { display:inline-block; padding:1px 8px; border-radius:999px; font-size:12px; border:1px solid var(--line); }
+    .s-delivered { color:var(--ok); } .s-cancelled { color:var(--bad); } .s-shipped, .s-paid { color:var(--accent); } .s-created { color:var(--warn); }
+    .meter { height:6px; background:var(--line); border-radius:3px; overflow:hidden; }
+    .meter > div { height:100%; background:var(--accent); }
+    .alert { border-radius:10px; padding:14px 16px; margin-bottom:14px; border:1px solid; }
+    .alert.bad { border-color:var(--bad); background:color-mix(in srgb, var(--bad) 8%, transparent); }
+    .alert.warn { border-color:var(--warn); background:color-mix(in srgb, var(--warn) 8%, transparent); }
+    .alert ul { margin:6px 0 0 18px; padding:0; }
+    .err { color:var(--bad); font-size:12px; }
+    details { margin-top:18px; } summary { cursor:pointer; color:var(--muted); }
+    pre { white-space:pre-wrap; font-size:12px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px; }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>LW Commerce KPIs <span class="muted">· gold layer</span></h1>
+    <div class="muted">
+      Live from <code>{{ snap.catalog }}.{{ schema }}.*</code> via Databricks SQL ·
+      fetched {{ snap.fetched_at.strftime("%Y-%m-%d %H:%M:%S") }} ({{ "%.1f"|format(snap.elapsed_s) }}s)
+      {% if headline.gold_loaded_at %} · gold built {{ headline.gold_loaded_at }}{% endif %}
+    </div>
+  </div>
+  <a class="btn" href="?refresh=1">Refresh</a>
+</header>
+
+{% if snap.fatal %}
+  <div class="alert bad">
+    <strong>Can't reach the Databricks SQL Warehouse.</strong>
+    <div class="muted" style="margin-top:4px">{{ snap.fatal }}</div>
+    <ul>
+      <li>Fill <code>DATABRICKS_HOST</code>, <code>DATABRICKS_HTTP_PATH</code>, <code>DATABRICKS_TOKEN</code> in <code>.env</code> (see <code>.env.example</code>) and/or the <code>databricks_sql</code> connection in <code>airflow_settings.yaml</code>.</li>
+      <li>Restart Astro (<code>just restart</code>) so the API server picks them up, then check <code>just ping</code>.</li>
+    </ul>
+  </div>
+{% elif snap.is_empty %}
+  <div class="alert warn">
+    <strong>Gold is empty (or not built yet).</strong>
+    Trigger the DAG <code>lw_commerce_lakehouse</code> (<code>just trigger</code>) and refresh once the <code>gold</code> task group is green.
+    {% if snap.errors %}<ul>{% for k, e in snap.errors.items() %}<li><code>{{ k }}</code>: {{ e }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+{% endif %}
+
+{% if not snap.fatal %}
+<section class="grid kpis">
+  <div class="card kpi"><div class="label">Revenue</div><div class="value">€{{ headline.revenue_eur|num(2) }}</div>
+    <div class="sub">{{ headline.first_order_date or "—" }} → {{ headline.last_order_date or "—" }}</div></div>
+  <div class="card kpi"><div class="label">Orders</div><div class="value">{{ headline.orders|num }}</div>
+    <div class="sub">excl. cancelled</div></div>
+  <div class="card kpi"><div class="label">Avg order value</div><div class="value">€{{ headline.avg_order_value_eur|num(2) }}</div>
+    <div class="sub">revenue / orders</div></div>
+  <div class="card kpi"><div class="label">Customers</div><div class="value">{{ customers.customers|num }}</div>
+    <div class="sub">{{ customers.repeat_customer_pct|num(1) }}% repeat · €{{ customers.avg_revenue_per_customer_eur|num(2) }} avg</div></div>
+  <div class="card kpi"><div class="label">Countries</div><div class="value">{{ headline.countries|num }}</div>
+    <div class="sub">gold.daily_revenue</div></div>
+</section>
+
+<section class="grid panels">
+  <div class="card">
+    <h2>Daily revenue <span class="muted">· last {{ daily|length }} days · gold.daily_revenue</span></h2>
+    {% if snap.errors.daily %}<div class="err">{{ snap.errors.daily }}</div>
+    {% elif daily %}
+      <div class="bars">{% for r in daily %}
+        <div class="bar" style="height:{{ r._h }}%"
+             title="{{ r.order_date }} · €{{ r.revenue_eur|num(2) }} · {{ r.orders }} orders"></div>{% endfor %}
+      </div>
+      <div class="bar-labels">{% for r in daily %}<span>{{ r._label }}</span>{% endfor %}</div>
+    {% else %}<div class="muted">No rows.</div>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Revenue by country <span class="muted">· gold.daily_revenue</span></h2>
+    {% if snap.errors.by_country %}<div class="err">{{ snap.errors.by_country }}</div>
+    {% elif by_country %}
+      <table><tr><th>Country</th><th class="n">Revenue €</th><th class="n">Orders</th><th class="n">AOV €</th></tr>
+      {% for r in by_country %}<tr><td>{{ r.country }}</td><td class="n">{{ r.revenue_eur|num(2) }}</td><td class="n">{{ r.orders|num }}</td><td class="n">{{ r.avg_order_value_eur|num(2) }}</td></tr>{% endfor %}
+      </table>
+    {% else %}<div class="muted">No rows.</div>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Top products <span class="muted">· gold.top_products</span></h2>
+    {% if snap.errors.top_products %}<div class="err">{{ snap.errors.top_products }}</div>
+    {% elif top_products %}
+      <table><tr><th>Product</th><th>Category</th><th class="n">Units</th><th class="n">Revenue €</th></tr>
+      {% for r in top_products %}<tr><td>{{ r.product_name }}</td><td class="muted">{{ r.category }}</td><td class="n">{{ r.units_sold|num }}</td><td class="n">{{ r.revenue_eur|num(2) }}</td></tr>{% endfor %}
+      </table>
+    {% else %}<div class="muted">No rows.</div>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Order fulfillment funnel <span class="muted">· gold.order_fulfillment</span></h2>
+    {% if snap.errors.fulfillment %}<div class="err">{{ snap.errors.fulfillment }}</div>
+    {% elif fulfillment %}
+      <table><tr><th>Status</th><th class="n">Orders</th><th class="n">%</th><th style="width:40%"></th></tr>
+      {% for r in fulfillment %}<tr><td><span class="pill s-{{ r.status }}">{{ r.status }}</span></td><td class="n">{{ r.order_count|num }}</td><td class="n">{{ r.pct|num(1) }}</td>
+        <td><div class="meter"><div style="width:{{ r.pct or 0 }}%"></div></div></td></tr>{% endfor %}
+      </table>
+    {% else %}<div class="muted">No rows.</div>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Top customers <span class="muted">· gold.customer_orders</span></h2>
+    {% if snap.errors.top_customers %}<div class="err">{{ snap.errors.top_customers }}</div>
+    {% elif top_customers %}
+      <table><tr><th>Customer</th><th>Country</th><th class="n">Orders</th><th class="n">Revenue €</th><th class="n">AOV €</th></tr>
+      {% for r in top_customers %}<tr><td>{{ r.customer_id }}</td><td>{{ r.primary_country }}</td><td class="n">{{ r.orders|num }}</td><td class="n">{{ r.revenue_eur|num(2) }}</td><td class="n">{{ r.avg_order_value_eur|num(2) }}</td></tr>{% endfor %}
+      </table>
+    {% else %}<div class="muted">No rows.</div>{% endif %}
+  </div>
+</section>
+{% endif %}
+
+<details>
+  <summary>SQL behind this page (Databricks SQL Warehouse)</summary>
+  {% for k, q in queries.items() %}<pre>-- {{ k }}
+{{ q }}</pre>{% endfor %}
+</details>
+<p class="muted">Airflow plugin <code>plugins/lw_commerce_dashboard_plugin.py</code> · JSON: <a href="api/kpis">{{ url_prefix }}/api/kpis</a></p>
+</body>
+</html>
