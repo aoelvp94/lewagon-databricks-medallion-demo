@@ -12,7 +12,7 @@ LW Commerce lakehouse DAG (Le Wagon DE teaching demo)
 from __future__ import annotations
 
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from airflow.decorators import dag, task
@@ -51,6 +51,9 @@ execution_config = ExecutionConfig(
 _OPERATOR_ARGS = {
     "install_deps": False,
     "append_env": True,
+    "retries": 2,
+    "retry_delay": timedelta(minutes=2),
+    "execution_timeout": timedelta(minutes=45),
 }
 
 
@@ -76,6 +79,12 @@ def _medallion_layer(group_id: str, select: list[str]) -> DbtTaskGroup:
     start_date=datetime(2026, 1, 1),
     catchup=False,
     max_active_runs=1,
+    default_args={
+        "owner": "lewagon",
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+        "execution_timeout": timedelta(minutes=45),
+    },
     tags=["cosmos", "dbt", "lewagon", "medallion", "databricks", "commerce"],
     params={
         "max_order_pages": Param(20, type="integer", minimum=1, maximum=50),
