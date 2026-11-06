@@ -36,6 +36,7 @@ Full table lineage: [LINEAGE.md](LINEAGE.md).
 | 5 | **gold** | Aggregated KPIs shaped for questions: `daily_revenue`, `top_products`, `order_fulfillment`, `customer_orders`. Cancelled orders excluded from revenue. | `models/gold/` |
 | 6 | **Tests** | Each layer has tests (unique, not_null, relationships, accepted_values + SQL checks). A failing test stops downstream tasks in Cosmos. | `schema.yml`, `tests/` |
 | 7 | **Consume** | Point Genie at the `gold` schema and ask questions in English/Spanish. | [GENIE_DEMO.md](GENIE_DEMO.md) |
+| 8 | **Dashboard in Airflow** | An Airflow **plugin** adds a *LW Commerce KPIs* page to the Airflow UI that queries the 4 gold tables live via Databricks SQL. | `plugins/lw_commerce_dashboard/` |
 
 ### Why three layers?
 - **bronze** answers "what did the source say?" — structured but faithful.
@@ -80,7 +81,15 @@ just demo        # Astro + API, ping warehouse, trigger DAG
 just ui          # http://localhost:8080  (admin/admin) → DAG lw_commerce_lakehouse → Graph
 just kpis        # peek gold
 just docs        # dbt docs + lineage graph on http://localhost:8081
+just dashboard   # LW Commerce KPIs page (Airflow plugin, reads gold)
 ```
+
+### Airflow can host web pages (plugins)
+Once the `gold` task group is green, click **LW Commerce KPIs** in the Airflow top nav
+(or open http://localhost:8080/plugin/lw-commerce-kpis). The page is a tiny FastAPI app living in
+`plugins/` that Airflow 3 mounts on its API server (`fastapi_apps`) and links in the menu
+(`external_views`). It reads `workspace.gold.*` with the **same** `databricks_sql` connection the DAG uses —
+open *SQL behind this page* to see each query. Red banner = credentials missing; yellow banner = run the DAG first.
 
 Then open Catalog Explorer → `workspace` → `bronze` / `silver` / `gold` and the **Lineage** tab.
 
@@ -89,3 +98,4 @@ Then open Catalog Explorer → `workspace` → `bronze` / `silver` / `gold` and 
 2. Break something: set a product price to 0 in the API seed. Which layer drops it? Which test would catch it if it didn't?
 3. Re-trigger the DAG twice. Why do bronze row counts stay the same while raw grows?
 4. Compare the dbt lineage graph with the UC Lineage tab. What does each one know that the other doesn't?
+5. Add a tile to the dashboard plugin: revenue by `category` from `gold.top_products` (edit `plugins/lw_commerce_dashboard/gold.py` + the template, then `just restart`).

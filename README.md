@@ -122,6 +122,7 @@ just demo          # start Astro (+ API), ping warehouse, trigger DAG
 just ui            # Airflow http://localhost:8080  (admin/admin)
 just smoke         # hit LW Commerce API
 just kpis          # peek gold tables after success
+just dashboard     # gold KPIs page inside Airflow (plugin)
 ```
 
 Or step by step:
@@ -143,12 +144,46 @@ just dbt-run --select path:models/gold
 
 If the API container is unreachable, ingest **falls back** to `include/data/sample_*.json` (same seed as the API).
 
+## Airflow plugin · LW Commerce KPIs (gold dashboard)
+
+Classroom point: Airflow's `plugins/` folder can **host custom web pages inside the Airflow UI**.
+This one reads the four gold tables live through Databricks SQL (no mock data).
+
+| | |
+|---|---|
+| Menu | Top nav → **LW Commerce KPIs** (bar-chart icon) |
+| In-UI page (iframe) | http://localhost:8080/plugin/lw-commerce-kpis |
+| Raw page | http://localhost:8080/lw-commerce/ (`?refresh=1` bypasses the 60 s cache) |
+| JSON | http://localhost:8080/lw-commerce/api/kpis |
+| Code | `plugins/lw_commerce_dashboard_plugin.py` + `plugins/lw_commerce_dashboard/` |
+
+After `just demo` (and once the `gold` task group is green) run `just dashboard` or click the menu entry.
+
+- **Airflow 3 style** (Runtime 3.3 = Airflow 3.3): `fastapi_apps` mounts a FastAPI app on the API server at `/lw-commerce`, `external_views` adds the nav entry and embeds it as an iframe. This replaces Airflow 2's Flask-AppBuilder `appbuilder_views` / `appbuilder_menu_items` (only available in Airflow 3 via the FAB provider compatibility layer).
+- **Same connection path as the DAG**: `include/databricks_client.py` → Airflow connection `databricks_sql`, falling back to `DATABRICKS_*` env vars (the `api-server` gets them from `docker-compose.override.yml`).
+- **Auth**: Airflow does not authenticate plugin apps, so the app depends on `get_user` — only logged-in Airflow users (UI cookie or Bearer token) can open it.
+- **Graceful states**: missing creds / unreachable warehouse → red banner with fix steps; gold not built → yellow banner, per-table errors (`TABLE_OR_VIEW_NOT_FOUND`).
+- The SQL behind each tile is shown at the bottom of the page (*SQL behind this page*).
+
+| Tile | Gold table | Query (catalog default `workspace`) |
+|------|-----------|-------|
+| Revenue / Orders / AOV / Countries | `gold.daily_revenue` | `SUM(revenue_eur)`, `SUM(orders)`, revenue/orders, `COUNT(DISTINCT country)`, `MAX(gold_loaded_at)` |
+| Customers (repeat %, avg revenue) | `gold.customer_orders` | `COUNT(*)`, `AVG(revenue_eur)`, share with `orders > 1` |
+| Daily revenue (bars, last 14 days) | `gold.daily_revenue` | `GROUP BY order_date ORDER BY order_date DESC LIMIT 14` |
+| Revenue by country | `gold.daily_revenue` | `GROUP BY country ORDER BY revenue_eur DESC` |
+| Top products | `gold.top_products` | `ORDER BY revenue_eur DESC LIMIT 10` |
+| Fulfillment funnel | `gold.order_fulfillment` | `SUM(order_count) GROUP BY status` + % of total |
+| Top customers | `gold.customer_orders` | `ORDER BY revenue_eur DESC LIMIT 10` |
+
+Plugin code changes need an API-server restart: `just restart`. Debug with `astro dev run plugins`.
+
 ## Project layout
 
 ```text
 lewagon-databricks-medallion-demo/     # Astro project root
 ├── Dockerfile                         # Runtime 3.3-2 + dbt-databricks venv
 ├── docker-compose.override.yml        # DATABRICKS_* + api service + UI :8090
+├── plugins/                           # Airflow UI plugin: LW Commerce KPIs (gold dashboard)
 ├── requirements.txt                   # Cosmos + Databricks connector
 ├── .env.example
 ├── airflow_settings.yaml.example

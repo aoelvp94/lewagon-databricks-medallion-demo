@@ -62,6 +62,11 @@ ui:
     open "{{ airflow_url }}" || xdg-open "{{ airflow_url }}" || true
     @echo "{{ airflow_url }}"
 
+# LW Commerce KPIs — Airflow UI plugin page reading gold tables (log in to Airflow first)
+dashboard:
+    open "{{ airflow_url }}/plugin/lw-commerce-kpis" || xdg-open "{{ airflow_url }}/plugin/lw-commerce-kpis" || true
+    @echo "{{ airflow_url }}/plugin/lw-commerce-kpis   (raw: {{ airflow_url }}/lw-commerce/ · JSON: {{ airflow_url }}/lw-commerce/api/kpis)"
+
 # --- pipeline ----------------------------------------------------------------
 
 wait-dag:
@@ -155,6 +160,7 @@ demo: start
     @echo "Airflow:  {{ airflow_url }}  (admin / admin)"
     @echo "API:      {{ api_url }}  (X-API-Key: $${API_KEY:-lewagon-demo})"
     @echo "Catalog:  $${DATABRICKS_CATALOG:-workspace} (raw / bronze / silver / gold)"
+    @echo "KPIs:     {{ airflow_url }}/plugin/lw-commerce-kpis  (Airflow nav → LW Commerce KPIs, after gold is green)"
     @echo "Genie:    see docs/GENIE_DEMO.md after gold tables land"
 
 # --- dbt bench (parse/compile; no secret echo) --------------------------------
